@@ -4,11 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QA Web App</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/styles/styles.css">
 </head>
 <body>
-  <div id="app">
+    <div id="app">
+        <section id="main-container">
+            <h4 class="question-number">Question <b id="question-counter"></b></h4>
+            <video autoplay id="countDownAnimation" class="animation">
+                <source src="assets/videos/countdown.webm" type="video/webm">
+                Votre navigateur ne supporte pas la vidéo.
+            </video>
+
+            <img src="assets/images/animationCheck.gif" id="checkAnimation" class="animation hidden" />
+            <video autoplay muted id="errorAnimation" class="animation hidden">
+                <source src="assets/videos/animationError.webm" type="video/webm">
+                Votre navigateur ne supporte pas la vidéo.
+            </video>
+            <h2 id="question-container" class="question">
+            </h2>
+            <div id="responses-container"></div>
+            <div class="buttons-container">
+                <button class="answer-button" id="answer-button" onclick="onAnswerButtonClick()">Valider la réponse</button>
+                &nbsp;&nbsp;
+                <button class="next-button" onclick="goToNextQuestion()">Suivant</button>
+            </div>
+        </section>
+        <section id="result-container" class="hidden">
+        </section>
     </div>
-  <script src="assets/js/app.js"></script>
+    <script src="assets/js/app.js"></script>
 </body>
 </html>
