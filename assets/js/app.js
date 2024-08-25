@@ -3,6 +3,7 @@
 // Get the app container element
 const appContainer = document.getElementById('app');
 
+let difficulty;
 let questionsData;
 let currentQuestion = 0;
 let maxQuestions = 5;
@@ -32,7 +33,7 @@ function shuffleArray(array) {
 
 async function fetchData() {
     try {
-        let response = await fetch('https://opentdb.com/api.php?amount=5&type=multiple&encode=url3986');
+        let response = await fetch(`https://opentdb.com/api.php?amount=5&type=multiple&difficulty${difficulty}&encode=url3986`);
 
         //Success
         if (response.ok) {
@@ -101,14 +102,6 @@ async function bindDataToLayout(currentQuestion) {
     }
 }
 
-async function initialize() {
-    currentQuestion = 0;
-    //Fetching data to bind the layout
-    questionsData = await fetchData();
-
-    await bindDataToLayout(currentQuestion);
-}
-
 async function goToNextQuestion() {
     currentQuestion++;
     clearTimeout(timeOut);
@@ -120,10 +113,11 @@ async function goToNextQuestion() {
                                             .replace('{{ total }}', maxQuestions);
 
         let mainContainer = document.getElementById('main-container');
-        let resultContainer = document.getElementById('result-container');
-        resultContainer.innerHTML = bindedLayout;
-        resultContainer.classList.remove('hidden');
+        let secondContainer = document.getElementById('second-container');
+        secondContainer.innerHTML = bindedLayout;
+        secondContainer.classList.remove('hidden');
         mainContainer.classList.add('hidden');
+
         bindOnResetButtonClick();
         return;
     }
@@ -139,6 +133,21 @@ async function goToNextQuestion() {
 }
 
 //Events
+function bindOnDifficultyCheck() {
+    let radioButtons = document.querySelectorAll('input[name="difficulty"]');
+
+    radioButtons.forEach(radioButton => {
+        radioButton.addEventListener('click', () => {
+            difficulty = radioButton.value;
+
+            let difficultyElementsWithClass = document.querySelectorAll('.difficulty');
+            difficultyElementsWithClass.forEach(element => {
+                element.classList.remove('checked');
+            });
+            radioButton.parentElement.classList.add('checked');
+        });
+    });
+}
 function bindOnChoiceCheck() {
     let radioButtons = document.querySelectorAll('input[name="response"]');
 
@@ -146,7 +155,7 @@ function bindOnChoiceCheck() {
         radioButton.addEventListener('click', () => {
             selectedAnswer = radioButton.value;
 
-            let responseElementsWithClass = document.querySelectorAll('.response-element');
+            let responseElementsWithClass = document.querySelectorAll('.response');
             responseElementsWithClass.forEach(element => {
                 element.classList.remove('checked');
             });
@@ -175,6 +184,8 @@ function onAnswerButtonClick() {
     else {
         checkAnimationContainer.classList.add('hidden');
         errorAnimationContainer.classList.remove('hidden');
+        errorAnimationContainer.currentTime = 0;
+        errorAnimationContainer.play();
         checkedResponseElementContainer[0].classList.add('wrong');
     }
 }
@@ -182,17 +193,50 @@ function onAnswerButtonClick() {
 function bindOnResetButtonClick() {
     let resetButton = document.getElementById('reset-button');
     resetButton.addEventListener('click', async () => {
-        await initialize();
+        await initializeDifficulty();
         let mainContainer = document.getElementById('main-container');
-        let resultContainer = document.getElementById('result-container');
-        mainContainer.classList.remove('hidden');
-        resultContainer.classList.add('hidden');
+        let secondContainer = document.getElementById('second-container');
+        mainContainer.classList.add('hidden');
+        secondContainer.classList.remove('hidden');
     });
+}
+
+function bindOnStartButtonClick() {
+    let startButton = document.getElementById('start-button');
+    startButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+        console.log("difficulty value...", difficulty);
+        await initializeQA();
+        let mainContainer = document.getElementById('main-container');
+        let secondContainer = document.getElementById('second-container');
+        mainContainer.classList.remove('hidden');
+        secondContainer.classList.add('hidden');
+    });
+}
+
+async function initializeQA() {
+    currentQuestion = 0;
+    //Fetching data to bind the layout
+    questionsData = await fetchData();
+
+    await bindDataToLayout(currentQuestion);
+}
+
+async function initializeDifficulty() {
+    //Fetching difficulty list layout
+    let difficultyHtmlLayout = await fetch('views/choose-difficulty.html').then(response => response.text());
+    let mainContainer = document.getElementById('main-container');
+    let secondContainer = document.getElementById('second-container');
+    secondContainer.innerHTML = difficultyHtmlLayout;
+    secondContainer.classList.remove('hidden');
+    mainContainer.classList.add('hidden');
+    bindOnDifficultyCheck();
+    bindOnStartButtonClick();
 }
 
 // Render the initial app content
 async function renderApp() {
-    await initialize();
+    await initializeDifficulty();
 }
 
 // Initial render

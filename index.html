@@ -10,7 +10,7 @@
 </head>
 <body>
     <div id="app">
-        <section id="main-container">
+        <section id="main-container" class="hidden">
             <h4 class="question-number">Question <b id="question-counter"></b></h4>
             <video autoplay id="countDownAnimation" class="animation">
                 <source src="assets/videos/countdown.webm" type="video/webm">
@@ -31,7 +31,7 @@
                 <button class="next-button" onclick="goToNextQuestion()">Suivant</button>
             </div>
         </section>
-        <section id="result-container" class="hidden">
+        <section id="second-container">
         </section>
     </div>
     <script src="assets/js/app.js"></script>
