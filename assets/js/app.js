@@ -68,7 +68,6 @@ async function bindDataToLayout(currentQuestion) {
 
         let answers = questionsData[currentQuestion].incorrect_answers;
         correctAnswer = decodeURIComponent(questionsData[currentQuestion].correct_answer);
-        console.log("correctAnswer...", correctAnswer);
         answers.push(correctAnswer);
         shuffleArray(answers);
 
@@ -105,6 +104,11 @@ async function bindDataToLayout(currentQuestion) {
 async function goToNextQuestion() {
     currentQuestion++;
     clearTimeout(timeOut);
+
+    if(selectedAnswer === correctAnswer) {
+        correctAnswersCount++;
+    }
+    
     if(currentQuestion === maxQuestions){
         
         //Fetching questions list layout and bind data
@@ -120,10 +124,6 @@ async function goToNextQuestion() {
 
         bindOnResetButtonClick();
         return;
-    }
-
-    if(selectedAnswer === correctAnswer) {
-        correctAnswersCount++;
     }
 
     await bindDataToLayout(currentQuestion);
@@ -188,6 +188,12 @@ function onAnswerButtonClick() {
         errorAnimationContainer.play();
         checkedResponseElementContainer[0].classList.add('wrong');
     }
+
+    //Disable response radio buttons after aswering
+    let responseElementsWithClass = document.querySelectorAll('input[name="response"]');
+    responseElementsWithClass.forEach(radioInput => {
+        radioInput.disabled = true;
+    });
 }
 
 function bindOnResetButtonClick() {
@@ -198,6 +204,7 @@ function bindOnResetButtonClick() {
         let secondContainer = document.getElementById('second-container');
         mainContainer.classList.add('hidden');
         secondContainer.classList.remove('hidden');
+        correctAnswersCount = 0;
     });
 }
 
@@ -205,7 +212,7 @@ function bindOnStartButtonClick() {
     let startButton = document.getElementById('start-button');
     startButton.addEventListener('click', async (event) => {
         event.preventDefault();
-        console.log("difficulty value...", difficulty);
+        
         await initializeQA();
         let mainContainer = document.getElementById('main-container');
         let secondContainer = document.getElementById('second-container');
