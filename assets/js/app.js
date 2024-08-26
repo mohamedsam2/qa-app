@@ -93,6 +93,7 @@ async function bindDataToLayout(currentQuestion) {
         timeOut = setTimeout(() => {
             let answerButton = document.getElementById('answer-button');
             answerButton.disabled = true;
+            disableReponseChoices();
         }, 10000);
     }
     catch(error) {
@@ -130,6 +131,14 @@ async function goToNextQuestion() {
 
     let answerButton = document.getElementById('answer-button');
     answerButton.disabled = false;
+}
+
+function disableReponseChoices() {
+    //Disable response radio buttons
+    let responseElementsWithClass = document.querySelectorAll('input[name="response"]');
+    responseElementsWithClass.forEach(radioInput => {
+        radioInput.disabled = true;
+    });
 }
 
 //Events
@@ -190,10 +199,7 @@ function onAnswerButtonClick() {
     }
 
     //Disable response radio buttons after aswering
-    let responseElementsWithClass = document.querySelectorAll('input[name="response"]');
-    responseElementsWithClass.forEach(radioInput => {
-        radioInput.disabled = true;
-    });
+    disableReponseChoices();
 }
 
 function bindOnResetButtonClick() {
